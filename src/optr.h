@@ -3,8 +3,12 @@
 namespace hapi
 {
 	template<typename T>
+	class sptr;
+
+	template<typename T>
 	class optr final
 	{
+		friend class sptr<T>;
 	public:
 		optr() : m_ptr(nullptr) {}
 		explicit optr(T* const newptr) : m_ptr(newptr) {}
@@ -18,9 +22,10 @@ namespace hapi
 		}
 		~optr()
 		{
-			// you forgot to call free() loser
-			if (m_ptr)
-				abort();
+			// you still have sptrs that reference this optr, loser
+			HAPI_ASSERT(m_ref_count == 0);
+			// you forgot to call free(), loser
+			HAPI_ASSERT(!m_ptr);
 		}
 	public:
 		void operator=(optr<T> const& other) = delete;
@@ -41,21 +46,29 @@ namespace hapi
 		{
 			return m_ptr != other.m_ptr;
 		}
+		operator bool() const
+		{
+			return m_ptr;
+		}
 	public:
 		T& operator*()
 		{
+			HAPI_ASSERT(m_ptr);
 			return *m_ptr;
 		}
 		T const& operator*() const
 		{
+			HAPI_ASSERT(m_ptr);
 			return *m_ptr;
 		}
 		T* operator->()
 		{
+			HAPI_ASSERT(m_ptr);
 			return m_ptr;
 		}
 		T const* operator->() const
 		{
+			HAPI_ASSERT(m_ptr);
 			return m_ptr;
 		}
 		T* get()
@@ -76,10 +89,23 @@ namespace hapi
 		}
 		void free()
 		{
+			// you still have sptrs that reference this optr, loser
+			HAPI_ASSERT(m_ref_count == 0);
 			delete m_ptr;
 			m_ptr = nullptr;
 		}
 	private:
 		T* m_ptr;
+		uint64_t m_ref_count = 0;
+	private:
+		void dec_ref_count()
+		{
+			HAPI_ASSERT(m_ref_count != 0);
+			m_ref_count--;
+		}
+		void inc_ref_count()
+		{
+			m_ref_count++;
+		}
 	};
 }

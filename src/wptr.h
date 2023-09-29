@@ -7,8 +7,11 @@ namespace hapi
 	class wptr final
 	{
 	public:
-		wptr() : m_ptr(nullptr) {}
+		wptr() = delete;
 		explicit wptr(T* const newptr) : m_ptr(newptr) {}
+		wptr(wptr<T> const& other) :
+			m_ptr(other.m_ptr)
+		{}
 		wptr(optr<T>& other) :
 			m_ptr(other.get())
 		{}
@@ -25,21 +28,29 @@ namespace hapi
 		{
 			return m_ptr != other.m_ptr;
 		}
+		operator bool() const
+		{
+			return m_ptr;
+		}
 	public:
 		T& operator*()
 		{
+			HAPI_ASSERT(m_ptr);
 			return *m_ptr;
 		}
 		T const& operator*() const
 		{
+			HAPI_ASSERT(m_ptr);
 			return *m_ptr;
 		}
 		T* operator->()
 		{
+			HAPI_ASSERT(m_ptr);
 			return m_ptr;
 		}
 		T const* operator->() const
 		{
+			HAPI_ASSERT(m_ptr);
 			return m_ptr;
 		}
 		T* get()
