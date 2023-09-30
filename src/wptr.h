@@ -1,5 +1,6 @@
 #pragma once
 #include "optr.h"
+#include "sptr.h"
 
 namespace hapi
 {
@@ -11,6 +12,9 @@ namespace hapi
 		explicit wptr(T* const newptr) : m_ptr(newptr) {}
 		wptr(wptr<T> const& other) :
 			m_ptr(other.m_ptr)
+		{}
+		wptr(sptr<T>&other) :
+			m_ptr(other.get())
 		{}
 		wptr(optr<T>& other) :
 			m_ptr(other.get())
