@@ -2,18 +2,23 @@
 
 namespace hapi
 {
-	template<typename T>
+	template<typename T, typename O>
 	class sptr;
 
 	template<typename T>
 	class optr final
 	{
-		friend class sptr<T>;
+		template<typename A, typename B>
+		friend class sptr;
 	public:
-		optr() : m_ptr(nullptr) {}
-		explicit optr(T* const newptr) : m_ptr(newptr) {}
-		template<typename ... ARGS>
-		explicit optr(ARGS&& ... args) : m_ptr(new T(std::move(args...))) {}
+		optr() :
+			m_ptr(nullptr) {}
+		explicit optr(T* const newptr) :
+			m_ptr(newptr) {}
+		template<typename... ARGS>
+		explicit optr(ARGS&&... args) :
+			m_ptr(new T(std::move(args...)))
+		{}
 		optr(optr<T> const& other) = delete;
 		optr(optr<T>&& other) noexcept :
 			m_ptr(other.m_ptr)
@@ -38,11 +43,11 @@ namespace hapi
 		{
 			set(newptr);
 		}
-		bool operator==(const optr<T>& other)
+		bool operator==(optr<T> const& other)
 		{
 			return m_ptr == other.m_ptr;
 		}
-		bool operator!=(const optr<T>& other)
+		bool operator!=(optr<T> const& other)
 		{
 			return m_ptr != other.m_ptr;
 		}
@@ -108,4 +113,4 @@ namespace hapi
 			m_ref_count++;
 		}
 	};
-}
+} // namespace hapi
