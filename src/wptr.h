@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include "optr.h"
 #include "sptr.h"
 
@@ -9,11 +10,12 @@ namespace hapi
 	{
 	public:
 		wptr() = delete;
-		explicit wptr(T* const newptr) : m_ptr(newptr) {}
+		explicit wptr(T* const newptr) :
+			m_ptr(newptr) {}
 		wptr(wptr<T> const& other) :
 			m_ptr(other.m_ptr)
 		{}
-		wptr(sptr<T>&other) :
+		wptr(sptr<T>& other) :
 			m_ptr(other.get())
 		{}
 		wptr(optr<T>& other) :
@@ -24,11 +26,11 @@ namespace hapi
 	public:
 		template<typename OTHER>
 		void operator=(OTHER o) = delete;
-		bool operator==(const wptr<T>& other)
+		bool operator==(wptr<T> const& other)
 		{
 			return m_ptr == other.m_ptr;
 		}
-		bool operator!=(const wptr<T>& other)
+		bool operator!=(wptr<T> const& other)
 		{
 			return m_ptr != other.m_ptr;
 		}
@@ -68,4 +70,13 @@ namespace hapi
 	private:
 		T* m_ptr;
 	};
-}
+} // namespace hapi
+
+template<typename T>
+struct std::hash<hapi::wptr<T>>
+{
+	uint64_t operator()(hapi::wptr<T> const& t) const
+	{
+		return std::hash<T const*>()(t.get());
+	}
+};

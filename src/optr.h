@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 
 namespace hapi
 {
@@ -114,3 +115,12 @@ namespace hapi
 		}
 	};
 } // namespace hapi
+
+template<typename T>
+struct std::hash<hapi::optr<T>>
+{
+	uint64_t operator()(hapi::optr<T> const& t) const
+	{
+		return std::hash<T const*>()(t.get());
+	}
+};

@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include "optr.h"
 
 namespace hapi
@@ -108,3 +109,12 @@ namespace hapi
 		optr<O>* m_ptr;
 	};
 } // namespace hapi
+
+template<typename T>
+struct std::hash<hapi::sptr<T>>
+{
+	uint64_t operator()(hapi::sptr<T> const& t) const
+	{
+		return std::hash<T const*>()(t.get());
+	}
+};
