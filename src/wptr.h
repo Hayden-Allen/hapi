@@ -15,10 +15,10 @@ namespace hapi
 		wptr(wptr<T> const& other) :
 			m_ptr(other.m_ptr)
 		{}
-		wptr(sptr<T>& other) :
+		wptr(sptr<T> other) :
 			m_ptr(other.get())
 		{}
-		wptr(optr<T>& other) :
+		wptr(optr<T> other) :
 			m_ptr(other.get())
 		{}
 		wptr(optr<T>&& other) = delete;
