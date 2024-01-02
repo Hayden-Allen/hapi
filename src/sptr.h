@@ -4,14 +4,23 @@
 
 namespace hapi
 {
-	template<typename T, typename O = T>
+	template<typename T>
 	class sptr final
 	{
-		template<typename A, typename B>
+		template<typename U>
 		friend class sptr;
 	public:
 		sptr() = delete;
-		sptr(sptr<T, O> const& other) :
+		template<typename U>
+		sptr(sptr<U> const& other) :
+			m_ptr((optr<T>*)other.m_ptr)
+		{
+			if (m_ptr)
+			{
+				m_ptr->inc_ref_count();
+			}
+		}
+		sptr(sptr<T> const& other) :
 			m_ptr(other.m_ptr)
 		{
 			if (m_ptr)
@@ -19,15 +28,17 @@ namespace hapi
 				m_ptr->inc_ref_count();
 			}
 		}
-		sptr(optr<O>& other) :
-			m_ptr(&other)
+		template<typename U>
+		sptr(optr<U>& other) :
+			m_ptr((optr<T>*) & other)
 		{
 			if (m_ptr)
 			{
 				m_ptr->inc_ref_count();
 			}
 		}
-		sptr(optr<O>&& other) = delete;
+		template<typename U>
+		sptr(optr<U>&& other) = delete;
 		~sptr()
 		{
 			if (m_ptr)
@@ -38,11 +49,11 @@ namespace hapi
 	public:
 		template<typename OTHER>
 		void operator=(OTHER o) = delete;
-		bool operator==(sptr<T, O> const& other)
+		bool operator==(sptr<T> const& other)
 		{
 			return m_ptr == other.m_ptr;
 		}
-		bool operator!=(sptr<T, O> const& other)
+		bool operator!=(sptr<T> const& other)
 		{
 			return m_ptr != other.m_ptr;
 		}
@@ -95,7 +106,7 @@ namespace hapi
 				m_ptr = nullptr;
 			}
 		}
-		void bind(optr<O>& other)
+		void bind(optr<T>& other)
 		{
 			unbind();
 			m_ptr = &other;
@@ -106,7 +117,7 @@ namespace hapi
 			return m_ptr;
 		}
 	private:
-		optr<O>* m_ptr;
+		optr<T>* m_ptr;
 	};
 } // namespace hapi
 

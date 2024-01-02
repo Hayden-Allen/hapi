@@ -3,14 +3,13 @@
 
 namespace hapi
 {
-	template<typename T, typename O>
+	template<typename T>
 	class sptr;
 
 	template<typename T>
 	class optr final
 	{
-		template<typename A, typename B>
-		friend class sptr;
+		friend class sptr<T>;
 	public:
 		optr() :
 			m_ptr(nullptr) {}
