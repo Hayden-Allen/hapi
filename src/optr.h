@@ -76,11 +76,13 @@ namespace hapi
 			HAPI_ASSERT(m_ptr);
 			return m_ptr;
 		}
-		T* get()
+		template<typename U = T>
+		U* get()
 		{
 			return m_ptr;
 		}
-		T const* get() const
+		template<typename U = T>
+		U const* get() const
 		{
 			return m_ptr;
 		}

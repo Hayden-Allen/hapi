@@ -30,7 +30,7 @@ namespace hapi
 		}
 		template<typename U>
 		sptr(optr<U>& other) :
-			m_ptr((optr<T>*) & other)
+			m_ptr((optr<T>*)&other)
 		{
 			if (m_ptr)
 			{
@@ -86,13 +86,15 @@ namespace hapi
 			HAPI_ASSERT(m_ptr);
 			return (T const*)m_ptr->operator->();
 		}
-		T* get()
+		template<typename U = T>
+		U* get()
 		{
 			// your sptr isn't bound, loser
 			HAPI_ASSERT(m_ptr);
 			return (T*)m_ptr->get();
 		}
-		T const* get() const
+		template<typename U = T>
+		U const* get() const
 		{
 			// your sptr isn't bound, loser
 			HAPI_ASSERT(m_ptr);
