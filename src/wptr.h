@@ -24,8 +24,6 @@ namespace hapi
 		wptr(optr<T>&& other) = delete;
 		~wptr() {}
 	public:
-		template<typename OTHER>
-		void operator=(OTHER o) = delete;
 		bool operator==(wptr<T> const& other)
 		{
 			return m_ptr == other.m_ptr;
