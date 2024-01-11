@@ -108,10 +108,18 @@ namespace hapi
 				m_ptr = nullptr;
 			}
 		}
-		void bind(optr<T>& other)
+		template<typename U>
+		void bind(optr<U>& other)
 		{
 			unbind();
 			m_ptr = &other;
+			m_ptr->inc_ref_count();
+		}
+		template<typename U>
+		void bind(sptr<U> const& other)
+		{
+			unbind();
+			m_ptr = other.m_ptr;
 			m_ptr->inc_ref_count();
 		}
 		bool is_bound() const
