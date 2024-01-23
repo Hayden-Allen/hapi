@@ -131,11 +131,11 @@ namespace hapi
 	};
 } // namespace hapi
 
-template<typename T>
-struct std::hash<hapi::sptr<T>>
-{
-	uint64_t operator()(hapi::sptr<T> const& t) const
-	{
-		return std::hash<T const*>()(t.get());
-	}
-};
+// template<typename T>
+// struct std::hash<hapi::sptr<T>>
+//{
+//	uint64_t operator()(hapi::sptr<T> const& t) const
+//	{
+//		return std::hash<T const*>()(t.get());
+//	}
+// };

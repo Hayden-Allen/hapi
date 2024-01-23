@@ -72,11 +72,11 @@ namespace hapi
 	};
 } // namespace hapi
 
-template<typename T>
-struct std::hash<hapi::wptr<T>>
-{
-	uint64_t operator()(hapi::wptr<T> const& t) const
-	{
-		return std::hash<T const*>()(t.get());
-	}
-};
+// template<typename T>
+// struct std::hash<hapi::wptr<T>>
+//{
+//	uint64_t operator()(hapi::wptr<T> const& t) const
+//	{
+//		return std::hash<T const*>()(t.get());
+//	}
+// };
