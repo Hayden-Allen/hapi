@@ -5,11 +5,31 @@ namespace hapi
 {
 	template<typename T>
 	class sptr;
+#ifdef HAPI_OPAQUE
+	template<typename T>
+	class sptr;
+#endif
 
 	template<typename T>
+#ifdef HAPI_OPAQUE
+	class optr
+	{
+		template<typename U>
+		friend class sptr;
+		template<typename U>
+		friend class wptr;
+	public:
+		template<typename U>
+		optr(optr<U> const& other) :
+			m_ptr(other.m_ptr)
+		{}
+#else
 	class optr final
 	{
 		friend class sptr<T>;
+	public:
+		optr(optr<T> const& other) = delete;
+#endif
 	public:
 		optr() :
 			m_ptr(nullptr) {}
@@ -19,13 +39,12 @@ namespace hapi
 		explicit optr(ARGS&&... args) :
 			m_ptr(new T(std::move(args...)))
 		{}
-		optr(optr<T> const& other) = delete;
 		optr(optr<T>&& other) noexcept :
 			m_ptr(other.m_ptr)
 		{
 			other.m_ptr = nullptr;
 		}
-		~optr()
+		virtual ~optr()
 		{
 			// you still have sptrs that reference this optr, loser
 			HAPI_ASSERT(m_ref_count == 0);
@@ -79,12 +98,12 @@ namespace hapi
 		template<typename U = T>
 		U* get()
 		{
-			return m_ptr;
+			return (U*)m_ptr;
 		}
 		template<typename U = T>
 		U const* get() const
 		{
-			return m_ptr;
+			return (U*)m_ptr;
 		}
 		void set(T* const newptr)
 		{
@@ -103,6 +122,7 @@ namespace hapi
 		}
 	private:
 		T* m_ptr;
+#ifndef HAPI_OPAQUE
 		uint64_t m_ref_count = 0;
 	private:
 		void dec_ref_count()
@@ -114,14 +134,6 @@ namespace hapi
 		{
 			m_ref_count++;
 		}
+#endif
 	};
 } // namespace hapi
-
-// template<typename T>
-// struct std::hash<hapi::optr<T>>
-//{
-//	uint64_t operator()(hapi::optr<T> const& t) const
-//	{
-//		return std::hash<T const*>()(t.get());
-//	}
-// };

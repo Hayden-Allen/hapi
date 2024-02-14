@@ -4,6 +4,53 @@
 
 namespace hapi
 {
+#ifdef HAPI_OPAQUE
+	template<typename T>
+	class sptr final : public optr<T>
+	{
+		template<typename U>
+		friend class sptr;
+	public:
+		template<typename U>
+		sptr(optr<U> const& other)
+		{
+			this->m_ptr = (T*)other.m_ptr;
+		}
+		template<typename U>
+		sptr(sptr<U> const& other)
+		{
+			this->m_ptr = (T*)other.m_ptr;
+		}
+		sptr(optr<T> const& other)
+		{
+			this->m_ptr = other.m_ptr;
+		}
+		sptr(sptr<T> const& other)
+		{
+			this->m_ptr = other.m_ptr;
+		}
+	public:
+		sptr<T>& operator=(sptr<T> const& other)
+		{
+			this->m_ptr = other.m_ptr;
+			return *this;
+		}
+		void unbind()
+		{
+			this->m_ptr = nullptr;
+		}
+		template<typename U>
+		void bind(optr<U>& other)
+		{
+			this->m_ptr = other.m_ptr;
+		}
+		template<typename U>
+		void bind(sptr<U> const& other)
+		{
+			this->m_ptr = other.m_ptr;
+		}
+	};
+#else
 	template<typename T>
 	class sptr final
 	{
@@ -129,13 +176,5 @@ namespace hapi
 	private:
 		optr<T>* m_ptr;
 	};
+#endif
 } // namespace hapi
-
-// template<typename T>
-// struct std::hash<hapi::sptr<T>>
-//{
-//	uint64_t operator()(hapi::sptr<T> const& t) const
-//	{
-//		return std::hash<T const*>()(t.get());
-//	}
-// };

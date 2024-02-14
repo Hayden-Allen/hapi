@@ -5,6 +5,31 @@
 
 namespace hapi
 {
+#ifdef HAPI_OPAQUE
+	template<typename T>
+	class wptr final : public optr<T>
+	{
+	public:
+		wptr(T* const ptr)
+		{
+			this->m_ptr = ptr;
+		}
+		wptr(wptr<T> const& other)
+		{
+			this->m_ptr = other.m_ptr;
+		}
+		wptr(sptr<T> const& other)
+		{
+			this->m_ptr = other.m_ptr;
+		}
+	public:
+		wptr<T>& operator=(wptr<T> const& other)
+		{
+			this->m_ptr = other.m_ptr;
+			return *this;
+		}
+	};
+#else
 	template<typename T>
 	class wptr final
 	{
@@ -70,13 +95,5 @@ namespace hapi
 	private:
 		T* m_ptr;
 	};
+#endif
 } // namespace hapi
-
-// template<typename T>
-// struct std::hash<hapi::wptr<T>>
-//{
-//	uint64_t operator()(hapi::wptr<T> const& t) const
-//	{
-//		return std::hash<T const*>()(t.get());
-//	}
-// };
